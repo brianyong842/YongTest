@@ -67,6 +67,7 @@ class ApiHelper(private val context: Application) {
                 object : LocationListener {
                     override fun onLocationChanged(location: Location?) {
                         if (location != null) {
+                            locationManager.removeUpdates(this)
                             fetchRestaurant(offset, limit, listener)
                         }
                     }
