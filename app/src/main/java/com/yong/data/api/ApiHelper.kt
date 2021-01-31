@@ -5,7 +5,11 @@ import android.Manifest
 import android.app.Application
 import android.content.Context
 import android.content.pm.PackageManager
+import android.location.Criteria
+import android.location.Location
+import android.location.LocationListener
 import android.location.LocationManager
+import android.os.Bundle
 import androidx.core.app.ActivityCompat
 import com.android.volley.VolleyError
 import com.android.volley.toolbox.Volley
@@ -22,7 +26,7 @@ class ApiHelper(private val context: Application) {
     }
 
     fun fetchRestaurant(offset: Int, limit: Int, listener: ResponseListener<StoreResponse>) {
-        val location = location
+        val location = findLocation(offset, limit, listener)
         if (location == null) {
             listener.onLocationFailure()
             return
@@ -51,17 +55,35 @@ class ApiHelper(private val context: Application) {
         queue.add(request)
     }
 
-    private val location: Pair<Double, Double>?
-        get() {
-            if (ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-                return null
-            }
-            val locationManager = context.getSystemService(Context.LOCATION_SERVICE) as? LocationManager
-            val location = locationManager?.getLastKnownLocation(LocationManager.GPS_PROVIDER)
-            val latitude = location?.latitude
-            val longitude = location?.longitude
-            if (latitude == null || longitude == null) return null
-            return Pair(location.latitude, location.longitude)
+    private fun findLocation(offset: Int, limit: Int, listener: ResponseListener<StoreResponse>): Pair<Double, Double>? {
+        if (ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            return null
         }
+        val locationManager = context.getSystemService(Context.LOCATION_SERVICE) as? LocationManager
+        val provider = locationManager?.getBestProvider(Criteria(), true) ?: return null
+        val location = locationManager.getLastKnownLocation(provider)
+        if (location == null) {
+            locationManager.requestLocationUpdates(provider, 1000L, 0F,
+                object : LocationListener {
+                    override fun onLocationChanged(location: Location?) {
+                        if (location != null) {
+                            fetchRestaurant(offset, limit, listener)
+                        }
+                    }
 
+                    override fun onStatusChanged(provider: String?, status: Int, extras: Bundle?) {
+                    }
+
+                    override fun onProviderEnabled(provider: String?) {
+                    }
+
+                    override fun onProviderDisabled(provider: String?) {
+                    }
+                })
+        }
+        val latitude = location?.latitude
+        val longitude = location?.longitude
+        if (latitude == null || longitude == null) return null
+        return Pair(location.latitude, location.longitude)
+    }
 }

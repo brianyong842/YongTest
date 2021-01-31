@@ -45,9 +45,13 @@ class MainViewModel(private val context: Context, private val apiHelper: ApiHelp
     }
 
     override fun onFailure(error: VolleyError) {
+        setErrorMessage(error.message)
+    }
+
+    private fun setErrorMessage(message: String?) {
         isLoading.value = false
         showError.value = true
-        errorMessage.value = error.message
+        errorMessage.value = message
         errorCTA.value = context.getString(R.string.error_cta_retry)
     }
 
@@ -64,6 +68,9 @@ class MainViewModel(private val context: Context, private val apiHelper: ApiHelp
         } else if (status == PERMISSION_BLOCKED) {
             errorMessage.value = context.getString(R.string.error_msg_location_blocked)
             errorCTA.value = context.getString(R.string.error_cta_location_blocked)
+        } else {
+            locationErrorEvent.value = false
+            setErrorMessage(context.getString(R.string.error_msg_no_known_location))
         }
     }
 

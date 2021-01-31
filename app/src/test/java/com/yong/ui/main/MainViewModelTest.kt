@@ -82,6 +82,9 @@ class MainViewModelTest {
 
         whenLocationPermissionStatus(PERMISSION_BLOCKED)
         verifyErrorMessagesForLocationPermission(PERMISSION_BLOCKED)
+
+        whenLocationPermissionStatus(PERMISSION_GRANTED)
+        verifyErrorMessagesForLocationPermission(PERMISSION_GRANTED)
     }
 
     @Test
@@ -128,9 +131,12 @@ class MainViewModelTest {
         if (status == PERMISSION_DENIED) {
             assertEquals(context.getString(R.string.error_msg_location_denied), mainViewModel.errorMessage.value)
             assertEquals(context.getString(R.string.error_cta_location_denied), mainViewModel.errorCTA.value)
-        } else {
+        } else if (status == PERMISSION_BLOCKED) {
             assertEquals(context.getString(R.string.error_msg_location_blocked), mainViewModel.errorMessage.value)
             assertEquals(context.getString(R.string.error_cta_location_blocked), mainViewModel.errorCTA.value)
+        } else {
+            assertEquals(context.getString(R.string.error_msg_no_known_location), mainViewModel.errorMessage.value)
+            assertEquals(context.getString(R.string.error_cta_retry), mainViewModel.errorCTA.value)
         }
     }
 

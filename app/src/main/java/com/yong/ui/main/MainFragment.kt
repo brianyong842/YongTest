@@ -41,6 +41,9 @@ class MainFragment : AbsFragment() {
             lifecycleOwner = viewLifecycleOwner
         }
         mActivity.setSupportActionBar(viewDataBinding.toolbar)
+        setupUI()
+        setupObserve()
+
         if (locationPermissionStatus != PERMISSION_GRANTED) {
             requestLocationPermission()
         } else {
@@ -48,12 +51,6 @@ class MainFragment : AbsFragment() {
         }
 
         return viewDataBinding.root
-    }
-
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-        setupUI()
-        setupObserve()
     }
 
     private fun setupObserve() {
