@@ -42,6 +42,7 @@ class MainViewModel(private val context: Context, private val apiHelper: ApiHelp
         stores.value = value
         title.value = "${context.getString(R.string.discovery)} (${value.size})"
         isLoading.value = false
+        showError.value = false
     }
 
     override fun onFailure(error: VolleyError) {
