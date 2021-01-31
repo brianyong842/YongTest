@@ -1,0 +1,9 @@
+<resources>
+    <string name="app_name">Yong</string>
+    <string name="error_msg_location_denied">Location Service is not available</string>
+    <string name="error_cta_location_denied">Check</string>
+    <string name="error_msg_location_blocked">Location Service is not denied\nPlease enable location service in settings</string>
+    <string name="error_cta_location_blocked">OK</string>
+    <string name="error_cta_retry">Retry</string>
+    <string name="discovery">Discovery</string>
+</resources>
