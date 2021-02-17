@@ -54,18 +54,18 @@ class MainFragment : AbsFragment() {
     }
 
     private fun setupObserve() {
-        viewModel.openDetailEvent.observe(this, { store ->
+        viewModel.openDetailEvent.observe(viewLifecycleOwner, { store ->
             if (store == null) return@observe
             val fragmentManager = fragmentManager ?: return@observe
             DetailFragment.newInstance(fragmentManager, R.id.container, store.id, store.name)
         })
 
-        viewModel.locationErrorEvent.observe(this, { error ->
+        viewModel.locationErrorEvent.observe(viewLifecycleOwner, { error ->
             if (!error) return@observe
             viewModel.notifyLocationPermissionDeniedStatus(locationPermissionStatus)
         })
 
-        viewModel.checkLocationErrorEvent.observe(this, { check ->
+        viewModel.checkLocationErrorEvent.observe(viewLifecycleOwner, { check ->
             if (!check) return@observe
             viewModel.checkLocationErrorEvent.postValue(false)
             checkLocationPermissionAndHandle()
@@ -79,7 +79,7 @@ class MainFragment : AbsFragment() {
     private fun setupUI() {
         val recyclerView = viewDataBinding.recyclerView
         recyclerView.addItemDecoration(DividerItemDecoration(recyclerView.context, DividerItemDecoration.VERTICAL))
-        recyclerView.adapter = StoreAdapter(viewModel)
+        recyclerView.adapter = StoreAdapter(viewModel, viewLifecycleOwner)
     }
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {

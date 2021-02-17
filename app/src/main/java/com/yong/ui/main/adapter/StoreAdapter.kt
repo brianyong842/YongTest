@@ -3,10 +3,13 @@ package com.yong.ui.main.adapter
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.lifecycle.LifecycleOwner
 import androidx.recyclerview.widget.RecyclerView
 import com.yong.R
 import com.yong.data.model.Store
 import com.yong.databinding.ViewholderStoreBinding
+import com.yong.ui.main.CLICK_ACTION_FAVORITE
+import com.yong.ui.main.CLICK_ACTION_OPEN
 import com.yong.ui.main.MainViewModel
 import com.yong.ui.main.StoreViewModel
 import com.yong.utils.OnItemClickListener
@@ -14,7 +17,7 @@ import com.yong.utils.OnItemClickListener
 private const val VIEWTYPE_DEFAULT = 0
 private const val VIEWTYPE_MORE = 1
 
-class StoreAdapter(private val viewModel: MainViewModel): RecyclerView.Adapter<RecyclerView.ViewHolder>(),
+class StoreAdapter(private val viewModel: MainViewModel, private val viewLifecycleOwner: LifecycleOwner): RecyclerView.Adapter<RecyclerView.ViewHolder>(),
     OnItemClickListener<StoreViewModel> {
     var items: MutableList<Store> = ArrayList()
         set(value) {
@@ -40,8 +43,8 @@ class StoreAdapter(private val viewModel: MainViewModel): RecyclerView.Adapter<R
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         if (holder is StoreViewHolder) {
             val item = items[position]
-            val viewModel = StoreViewModel(item, this)
-            holder.bind(viewModel)
+            val viewModel = StoreViewModel(item, this, viewModel.isFavorite(item))
+            holder.bind(viewModel, viewLifecycleOwner)
         } else if (holder is LoadMoreViewHolder) {
             viewModel.fetchNextItems()
         }
@@ -49,19 +52,23 @@ class StoreAdapter(private val viewModel: MainViewModel): RecyclerView.Adapter<R
 
     override fun getItemCount(): Int = if (viewModel.hasMore) items.size + 1 else items.size
 
-    override fun onClick(value: StoreViewModel) {
-        viewModel.openDetail(value.item)
+    override fun onClickAction(value: StoreViewModel, action: Int) {
+        if (action == CLICK_ACTION_OPEN) {
+            viewModel.openDetail(value.item)
+        } else if (action == CLICK_ACTION_FAVORITE) {
+            val isFavorite = viewModel.favoriteAction(value.item)
+            value.isFavorite.value = isFavorite
+        }
     }
-
 }
 
 
 
 
-class StoreViewHolder(private val binding: ViewholderStoreBinding): RecyclerView.ViewHolder(binding.root) {
-    fun bind(viewModel: StoreViewModel) {
+class StoreViewHolder(val binding: ViewholderStoreBinding): RecyclerView.ViewHolder(binding.root) {
+    fun bind(viewModel: StoreViewModel, lifecycleOwner: LifecycleOwner) {
         binding.viewmodel = viewModel
-        binding.executePendingBindings()
+        binding.lifecycleOwner = lifecycleOwner
     }
 
     companion object {

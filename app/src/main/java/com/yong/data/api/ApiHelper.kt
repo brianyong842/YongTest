@@ -4,6 +4,7 @@ import GsonRequest
 import android.Manifest
 import android.app.Application
 import android.content.Context
+import android.content.SharedPreferences
 import android.content.pm.PackageManager
 import android.location.Criteria
 import android.location.Location
@@ -24,6 +25,15 @@ class ApiHelper(private val context: Application) {
         fun onFailure(error: VolleyError)
         fun onLocationFailure() {}
     }
+    private val favoritePref: SharedPreferences = context.getSharedPreferences("favoritePref", Context.MODE_PRIVATE)
+
+    fun toggleFavorite(storeId: Long): Boolean {
+        val isFavorite = isFavorite(storeId)
+        favoritePref.edit().putBoolean(storeId.toString(), !isFavorite).apply()
+        return !isFavorite
+    }
+
+    fun isFavorite(storeId: Long) = favoritePref.getBoolean(storeId.toString(), false)
 
     fun fetchRestaurant(offset: Int, limit: Int, listener: ResponseListener<StoreResponse>) {
         val location = findLocation(offset, limit, listener)

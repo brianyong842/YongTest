@@ -7,4 +7,8 @@
     <string name="error_cta_retry">Retry</string>
     <string name="discovery">Discovery</string>
     <string name="error_msg_no_known_location">Location is not recognized. Requesting location.\nPlease try later</string>
+    <string name="favorite">Favorite</string>
+    <string name="unfavorite">Unfavorite</string>
+
+
 </resources>

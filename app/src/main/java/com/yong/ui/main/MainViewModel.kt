@@ -60,6 +60,10 @@ class MainViewModel(private val context: Context, private val apiHelper: ApiHelp
         openDetailEvent.value = store
     }
 
+    fun favoriteAction(store: Store): Boolean {
+        return apiHelper.toggleFavorite(store.id)
+    }
+
     fun notifyLocationPermissionDeniedStatus(status: Int) {
         isLoading.value = false
         showError.value = true
@@ -87,4 +91,6 @@ class MainViewModel(private val context: Context, private val apiHelper: ApiHelp
     override fun onLocationFailure() {
         locationErrorEvent.value = true
     }
+
+    fun isFavorite(item: Store): Boolean = apiHelper.isFavorite(item.id)
 }
