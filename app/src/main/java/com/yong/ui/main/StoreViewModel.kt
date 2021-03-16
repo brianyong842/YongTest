@@ -10,9 +10,7 @@ const val CLICK_ACTION_FAVORITE = 2
 class StoreViewModel(
     val item: Store,
     private val onClickListener: OnItemClickListener<StoreViewModel>,
-    favorite: Boolean,
-
-    ) : ViewModel() {
+    favorite: Boolean) : ViewModel() {
     val name: String = item.name
     val imageUrl: String = item.image
     val description: String = item.description

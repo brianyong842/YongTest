@@ -6,13 +6,16 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.annotation.IdRes
 import androidx.core.app.ActivityCompat
+import androidx.fragment.app.FragmentManager
 import androidx.recyclerview.widget.DividerItemDecoration
 import com.yong.R
 import com.yong.REQUEST_LOCATION
 import com.yong.databinding.MainFragmentBinding
 import com.yong.ui.AbsFragment
 import com.yong.ui.detail.DetailFragment
+import com.yong.ui.login.LoginFragment
 import com.yong.ui.main.adapter.StoreAdapter
 import com.yong.utils.getViewModel
 
@@ -20,6 +23,22 @@ const val PERMISSION_GRANTED = 0
 const val PERMISSION_DENIED = 1
 const val PERMISSION_BLOCKED = 2
 class MainFragment : AbsFragment() {
+    companion object {
+        private val TAG = MainFragment::class.java.simpleName
+        fun newInstance(
+            fragmentManager: FragmentManager,
+            @IdRes id: Int
+        ) {
+            val mFragment = fragmentManager.findFragmentByTag(TAG) as? MainFragment
+            if (mFragment != null) return
+            val fragment = MainFragment()
+            fragmentManager.beginTransaction()
+                .replace(id, fragment)
+                .commit()
+        }
+    }
+
+
     private val viewModel by lazy { getViewModel(MainViewModel::class.java) }
 
     private lateinit var viewDataBinding: MainFragmentBinding
@@ -44,10 +63,14 @@ class MainFragment : AbsFragment() {
         setupUI()
         setupObserve()
 
-        if (locationPermissionStatus != PERMISSION_GRANTED) {
-            requestLocationPermission()
+        if (!viewModel.isLoggedIn) {
+            LoginFragment.newInstance(fragmentManager!!, R.id.container)
         } else {
-            viewModel.fetchNextItems()
+            if (locationPermissionStatus != PERMISSION_GRANTED) {
+                requestLocationPermission()
+            } else {
+                viewModel.fetchNextItems()
+            }
         }
 
         return viewDataBinding.root
@@ -79,7 +102,7 @@ class MainFragment : AbsFragment() {
     private fun setupUI() {
         val recyclerView = viewDataBinding.recyclerView
         recyclerView.addItemDecoration(DividerItemDecoration(recyclerView.context, DividerItemDecoration.VERTICAL))
-        recyclerView.adapter = StoreAdapter(viewModel, viewLifecycleOwner)
+        recyclerView.adapter = StoreAdapter(viewModel)
     }
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {

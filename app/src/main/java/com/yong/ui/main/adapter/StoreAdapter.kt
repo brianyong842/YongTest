@@ -17,7 +17,7 @@ import com.yong.utils.OnItemClickListener
 private const val VIEWTYPE_DEFAULT = 0
 private const val VIEWTYPE_MORE = 1
 
-class StoreAdapter(private val viewModel: MainViewModel, private val viewLifecycleOwner: LifecycleOwner): RecyclerView.Adapter<RecyclerView.ViewHolder>(),
+class StoreAdapter(private val viewModel: MainViewModel): RecyclerView.Adapter<RecyclerView.ViewHolder>(),
     OnItemClickListener<StoreViewModel> {
     var items: MutableList<Store> = ArrayList()
         set(value) {
@@ -44,7 +44,7 @@ class StoreAdapter(private val viewModel: MainViewModel, private val viewLifecyc
         if (holder is StoreViewHolder) {
             val item = items[position]
             val viewModel = StoreViewModel(item, this, viewModel.isFavorite(item))
-            holder.bind(viewModel, viewLifecycleOwner)
+            holder.bind(viewModel)
         } else if (holder is LoadMoreViewHolder) {
             viewModel.fetchNextItems()
         }
@@ -65,10 +65,12 @@ class StoreAdapter(private val viewModel: MainViewModel, private val viewLifecyc
 
 
 
-class StoreViewHolder(val binding: ViewholderStoreBinding): RecyclerView.ViewHolder(binding.root) {
-    fun bind(viewModel: StoreViewModel, lifecycleOwner: LifecycleOwner) {
+class StoreViewHolder(private val binding: ViewholderStoreBinding): RecyclerView.ViewHolder(binding.root) {
+    init {
+        binding.lifecycleOwner = itemView.context as LifecycleOwner
+    }
+    fun bind(viewModel: StoreViewModel) {
         binding.viewmodel = viewModel
-        binding.lifecycleOwner = lifecycleOwner
     }
 
     companion object {

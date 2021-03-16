@@ -27,6 +27,9 @@ class MainViewModel(private val context: Context, private val apiHelper: ApiHelp
     var locationErrorEvent: MutableLiveData<Boolean> = MutableLiveData<Boolean>(false)
     val checkLocationErrorEvent: MutableLiveData<Boolean> = MutableLiveData()
 
+    val isLoggedIn: Boolean
+        get() = apiHelper.isLoggedIn
+
     fun fetchNextItems() {
         showError.value = false
         locationErrorEvent.value = false

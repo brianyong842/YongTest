@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.yong.YongApplication
 import com.yong.ui.detail.DetailViewModel
+import com.yong.ui.login.LoginViewModel
 import com.yong.ui.main.MainViewModel
 
 class ViewModelFactory(private val application: YongApplication): ViewModelProvider.NewInstanceFactory() {
@@ -12,6 +13,7 @@ class ViewModelFactory(private val application: YongApplication): ViewModelProvi
             when {
                 isAssignableFrom(MainViewModel::class.java) -> MainViewModel(application.applicationContext, application.apiHelper)
                 isAssignableFrom(DetailViewModel::class.java) -> DetailViewModel(application.applicationContext, application.apiHelper)
+                isAssignableFrom(LoginViewModel::class.java) -> LoginViewModel(application.applicationContext, application.apiHelper)
                 else -> super.create(modelClass)
             } as T
         }
